@@ -1,9 +1,9 @@
-# 🛡️ Automated Cybersecurity Threat Analysis System  
+# Automated Cybersecurity Threat Analysis System  
 ### Built during the **42 Beirut x Technologia Hackathon**
 
 ---
 
-## 📌 Overview  
+## Overview  
 This repository contains a fully automated **cybersecurity threat analysis system** built using **n8n**.  
 It was developed during the **42 Beirut x Technologia Hackathon** to showcase how automation and AI can significantly enhance threat detection, triage, and reporting workflows inside modern SOC environments.
 
@@ -11,7 +11,7 @@ The system ingests attack logs from CSV files, enriches each event with external
 
 ---
 
-## 🎯 Project Goals  
+## Project Goals  
 - Automate repetitive SOC enrichment tasks  
 - Minimize manual investigation effort  
 - Improve threat classification accuracy  
@@ -22,9 +22,9 @@ The system ingests attack logs from CSV files, enriches each event with external
 
 ---
 
-## 🧠 Key Features  
+## Key Features  
 
-### 🔹 **1. Log Ingestion**  
+### **1. Log Ingestion**  
 The workflow begins by reading attack logs from a CSV file containing fields such as:  
 - Source IP  
 - Destination IP  
@@ -33,7 +33,7 @@ The workflow begins by reading attack logs from a CSV file containing fields suc
 
 ---
 
-### 🔹 **2. Automated Threat-Intel Enrichment**  
+### **2. Automated Threat-Intel Enrichment**  
 Each IP is automatically enriched using multiple intelligence APIs:
 
 | API | Purpose |
@@ -47,7 +47,7 @@ This provides a complete intelligence profile for each event.
 
 ---
 
-### 🔹 **3. Multi-Model AI Analysis**  
+### **3. Multi-Model AI Analysis**  
 To provide deep reasoning and reduce bias, every event is evaluated by **five AI models**:
 
 - ChatGPT  
@@ -60,7 +60,7 @@ Each AI generates its own threat analysis.
 
 ---
 
-### 🔹 **4. AI Consensus Classification Engine**  
+### **4. AI Consensus Classification Engine**  
 A custom code module analyzes all AI outputs and determines:
 
 - TRUE_POSITIVE  
@@ -76,7 +76,7 @@ It computes:
 
 ---
 
-### 🔹 **5. Automated Alert Prioritization**  
+### **5. Automated Alert Prioritization**  
 If **3 or more models** classify an event as a **TRUE_POSITIVE**, the workflow flags it as:
 
 
@@ -84,14 +84,14 @@ This makes threat triage faster and more consistent.
 
 ---
 
-### 🔹 **6. Professional Reporting**  
+### **6. Professional Reporting**  
 
-#### 📄 CSV Output  
+#### CSV Output  
 - Machine-readable  
 - SIEM-ready  
 - Contains all enriched and classified data  
 
-#### 🌐 HTML Threat Intelligence Report  
+#### HTML Threat Intelligence Report  
 - Clean and modern UI  
 - Summary statistics  
 - Per-event breakdown  
@@ -101,7 +101,7 @@ This makes threat triage faster and more consistent.
 
 ---
 
-## 🧩 Architecture Overview  
+## Architecture Overview  
 
 ### **1. Ingestion Layer**
 - Manual Trigger  
@@ -138,37 +138,7 @@ This makes threat triage faster and more consistent.
 
 ---
 
-## 🛠️ Skills Demonstrated  
-
-### 🧩 Automation Engineering  
-- Multi-branch workflow orchestration  
-- JSON data transformation  
-- Parallel API execution  
-- Complex data merging  
-
-### 🛡️ Cybersecurity  
-- Threat intelligence enrichment  
-- Log analysis automation  
-- Reputation and context scoring  
-
-### 🤖 AI Engineering  
-- Multi-model evaluation  
-- Consensus algorithms  
-- Prompt-driven classification  
-
-### 💾 Data Engineering  
-- Structured pipelines  
-- CSV transformations  
-- HTML templating and rendering  
-
-### 💡 Hackathon Skillset  
-- Fast prototyping under pressure  
-- Clear architectural thinking  
-- Practical, SOC-ready output  
-
----
-
-## 🏆 Achievements  
+## Achievements  
 - Fully automated threat-analysis system built during the hackathon  
 - Successful integration of four threat-intel APIs  
 - Combined reasoning from five AI models  
@@ -179,12 +149,12 @@ This makes threat triage faster and more consistent.
 
 ---
 
-## 👥 Credits  
+## Credits  
 This project was created by the **42 Beirut x Technologia Hackathon team**, combining expertise in automation, AI, and cybersecurity.
 
 ---
 
-## 📄 License  
+## License  
 This project is available for educational and research use.  
 For commercial deployment, please request permission.
 
