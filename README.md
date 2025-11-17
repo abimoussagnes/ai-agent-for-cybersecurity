@@ -1,3 +1,4 @@
+![image alt](https://github.com/abimoussagnes/ai-agent-for-cybersecurity/blob/main/workflow.png?raw=true)
 # Automated Cybersecurity Threat Analysis System  
 ### Built during the **42 Beirut x Technologia Hackathon**
 
