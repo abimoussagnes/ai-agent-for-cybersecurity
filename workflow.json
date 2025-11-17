@@ -1,0 +1,843 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1472,
+        544
+      ],
+      "id": "f2c5c724-1e40-461b-9f28-29ca5b8c7230",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/mnt/c/Users/USER/Documents/n8n-data/cybersecurity_attacks.csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        544
+      ],
+      "id": "b356f4aa-5354-4c66-9be1-ceaac02c8e12",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        544
+      ],
+      "id": "68989ee4-1c57-4860-926f-aa74e9727fc1",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "abuseipdb_api_key",
+              "value": "9a639e43347c22a1c8ae9cbe11fb25181fe16c7ba1b7c2f71448e7d663728dc18c61eb9aaa51ea0d",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "virustotal_api_key",
+              "value": "cc0e3792b4eeafb612542b8214ea01a9aca08156c10f36108b6bebe555385c28",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "ipinfo_token",
+              "value": "4c8e242372dc1f",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "shodan_api_key",
+              "value": "VA3VMWmFndvaomVx3jTWU7lf1ugKVVM6",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "f339279e-0752-4d1a-965f-9dd247fc1e7a",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "id": "f829ae0f-5680-4e91-8223-ad963b9899f8",
+      "name": "Merge All Enrichment Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -352,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "abuseipdb_data",
+              "value": "={{ $('AbuseIPDB').item.json }}",
+              "type": "object"
+            },
+            {
+              "id": "id-2",
+              "name": "virustotal_data",
+              "value": "={{ $('VirusTotal').item.json }}",
+              "type": "object"
+            },
+            {
+              "id": "id-3",
+              "name": "ipinfo_data",
+              "value": "={{ $('IPinfo').item.json }}",
+              "type": "object"
+            },
+            {
+              "id": "id-4",
+              "name": "shodan_data",
+              "value": "={{ $('Shodan').item.json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4f375a6a-0123-4301-9ede-4aef6a186c92",
+      "name": "Format Final Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "26c26ba3-9516-451f-ab46-023164f64aa4",
+      "name": "OpenAI Analysis (ChatGPT)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        96,
+        208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mkBD8YP1OYfNSa43",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "id": "4305eff1-6ec0-4f0a-979a-b180d1f2ceb7",
+      "name": "Combine AI Analyses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "chatgpt_analysis",
+              "value": "={{ $('OpenAI Analysis (ChatGPT)').item.json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "deepseek_analysis",
+              "value": "={{ $('DeepSeek Analysis').item.json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "id-4",
+              "name": "mistral_analysis",
+              "value": "={{ $('Mistral AI Analysis').item.json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "id-5",
+              "name": "groq_analysis",
+              "value": "={{ $('Groq Analysis (Llama)').item.json.message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "3ec79894-660b-4460-9a0f-d57f4e8d750b",
+      "name": "Final Analysis Report",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "ac0ac2ed-7117-4235-9665-f437d9e5c7f7",
+      "name": "DeepSeek Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        96,
+        400
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mkBD8YP1OYfNSa43",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "text"
+      },
+      "id": "7944e2aa-4861-490c-ba71-f59c8dc32e52",
+      "name": "Mistral AI Analysis",
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        160,
+        688
+      ],
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "St2lLMWaG5yQt1nL",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "message"
+      },
+      "id": "e1c7f0c2-aa22-46e9-a448-7aaf66c98956",
+      "name": "Groq Analysis (Llama)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        96,
+        880
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "mkBD8YP1OYfNSa43",
+          "name": "OpenAi account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Extract all AI analyses from the input item\nconst chatgptAnalysis = $input.item.json.chatgpt_analysis || '';\nconst deepseekAnalysis = $input.item.json.deepseek_analysis || '';\nconst claudeAnalysis = $input.item.json.claude_analysis || '';\nconst mistralAnalysis = $input.item.json.mistral_analysis || '';\nconst groqAnalysis = $input.item.json.groq_analysis || '';\n\n// Function to extract classification from text\nfunction extractClassification(text) {\n  const upperText = text.toUpperCase();\n  if (upperText.includes('TRUE POSITIVE') || upperText.includes('TRUE_POSITIVE')) {\n    return 'TRUE_POSITIVE';\n  } else if (upperText.includes('FALSE POSITIVE') || upperText.includes('FALSE_POSITIVE')) {\n    return 'FALSE_POSITIVE';\n  }\n  return 'UNKNOWN';\n}\n\n// Function to extract confidence level\nfunction extractConfidence(text) {\n  const upperText = text.toUpperCase();\n  if (upperText.includes('CONFIDENCE: HIGH') || upperText.includes('HIGH CONFIDENCE')) {\n    return 'High';\n  } else if (upperText.includes('CONFIDENCE: MEDIUM') || upperText.includes('MEDIUM CONFIDENCE')) {\n    return 'Medium';\n  } else if (upperText.includes('CONFIDENCE: LOW') || upperText.includes('LOW CONFIDENCE')) {\n    return 'Low';\n  }\n  return 'Unknown';\n}\n\n// Analyze each AI response\nconst analyses = [\n  { name: 'ChatGPT', classification: extractClassification(chatgptAnalysis), confidence: extractConfidence(chatgptAnalysis) },\n  { name: 'DeepSeek', classification: extractClassification(deepseekAnalysis), confidence: extractConfidence(deepseekAnalysis) },\n  { name: 'Claude', classification: extractClassification(claudeAnalysis), confidence: extractConfidence(claudeAnalysis) },\n  { name: 'Mistral', classification: extractClassification(mistralAnalysis), confidence: extractConfidence(mistralAnalysis) },\n  { name: 'Groq', classification: extractClassification(groqAnalysis), confidence: extractConfidence(groqAnalysis) }\n];\n\n// Count classifications\nlet truePositiveCount = 0;\nlet falsePositiveCount = 0;\nlet unknownCount = 0;\n\nanalyses.forEach(analysis => {\n  if (analysis.classification === 'TRUE_POSITIVE') {\n    truePositiveCount++;\n  } else if (analysis.classification === 'FALSE_POSITIVE') {\n    falsePositiveCount++;\n  } else {\n    unknownCount++;\n  }\n});\n\n// Determine consensus\nconst totalModels = analyses.length;\nlet consensusClassification = 'UNKNOWN';\nlet consensusCount = 0;\n\nif (truePositiveCount > falsePositiveCount) {\n  consensusClassification = 'TRUE_POSITIVE';\n  consensusCount = truePositiveCount;\n} else if (falsePositiveCount > truePositiveCount) {\n  consensusClassification = 'FALSE_POSITIVE';\n  consensusCount = falsePositiveCount;\n} else if (truePositiveCount === falsePositiveCount && truePositiveCount > 0) {\n  consensusClassification = 'TIE';\n  consensusCount = truePositiveCount;\n}\n\n// Build confidence summary\nconst confidenceSummary = analyses.map(a => `${a.name}: ${a.classification} (${a.confidence})`).join(', ');\n\n// Return the result with all original data plus consensus analysis\nreturn {\n  ...($input.item.json),\n  consensus_classification: consensusClassification,\n  consensus_count: consensusCount,\n  total_models: totalModels,\n  confidence_summary: confidenceSummary,\n  detailed_breakdown: {\n    true_positive_count: truePositiveCount,\n    false_positive_count: falsePositiveCount,\n    unknown_count: unknownCount,\n    individual_analyses: analyses\n  }\n};"
+      },
+      "id": "355ce54b-a8cf-41a2-ba1e-6be80e3816cc",
+      "name": "Calculate AI Consensus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $('Calculate AI Consensus').item.json.consensus_classification }}",
+              "rightValue": "TRUE_POSITIVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "id-2",
+              "leftValue": "={{ $('Calculate AI Consensus').item.json.consensus_count }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c97b1cf4-364b-4dfd-ade9-b9f92902e0f5",
+      "name": "Check Threat Level",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "alert_priority",
+              "value": "HIGH",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "alert_reason",
+              "value": "Multiple AI models (3+) classified as TRUE POSITIVE threat",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "requires_immediate_action",
+              "value": true,
+              "type": "boolean"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "7087214c-8db6-4ba2-bbe2-5cc86f36be5a",
+      "name": "High Priority Alert",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "70167291-a66f-4d4b-a6f1-f0ad47de2a6c",
+      "name": "Aggregate All Results",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate Professional HTML Report for Threat Analysis\nconst items = $input.all();\n\n// Calculate summary statistics\nlet totalThreats = items.length;\nlet truePositives = 0;\nlet falsePositives = 0;\nlet highPriorityAlerts = 0;\nlet unknownClassifications = 0;\n\nitems.forEach(item => {\n  const classification = item.json.consensus_classification;\n  if (classification === 'TRUE_POSITIVE') {\n    truePositives++;\n  } else if (classification === 'FALSE_POSITIVE') {\n    falsePositives++;\n  } else {\n    unknownClassifications++;\n  }\n  \n  if (item.json.alert_priority === 'HIGH') {\n    highPriorityAlerts++;\n  }\n});\n\n// Generate HTML\nconst html = `\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>Cybersecurity Threat Analysis Report</title>\n  <style>\n    * {\n      margin: 0;\n      padding: 0;\n      box-sizing: border-box;\n    }\n    \n    body {\n      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n      padding: 20px;\n      color: #333;\n    }\n    \n    .container {\n      max-width: 1400px;\n      margin: 0 auto;\n      background: white;\n      border-radius: 10px;\n      box-shadow: 0 10px 40px rgba(0,0,0,0.2);\n      overflow: hidden;\n    }\n    \n    .header {\n      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);\n      color: white;\n      padding: 30px;\n      text-align: center;\n    }\n    \n    .header h1 {\n      font-size: 2.5em;\n      margin-bottom: 10px;\n    }\n    \n    .header p {\n      font-size: 1.1em;\n      opacity: 0.9;\n    }\n    \n    .summary-cards {\n      display: grid;\n      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n      gap: 20px;\n      padding: 30px;\n      background: #f8f9fa;\n    }\n    \n    .card {\n      background: white;\n      border-radius: 8px;\n      padding: 20px;\n      box-shadow: 0 2px 10px rgba(0,0,0,0.1);\n      text-align: center;\n      transition: transform 0.3s ease;\n    }\n    \n    .card:hover {\n      transform: translateY(-5px);\n      box-shadow: 0 5px 20px rgba(0,0,0,0.15);\n    }\n    \n    .card-title {\n      font-size: 0.9em;\n      color: #666;\n      text-transform: uppercase;\n      letter-spacing: 1px;\n      margin-bottom: 10px;\n    }\n    \n    .card-value {\n      font-size: 2.5em;\n      font-weight: bold;\n      margin-bottom: 5px;\n    }\n    \n    .card.danger .card-value {\n      color: #dc3545;\n    }\n    \n    .card.success .card-value {\n      color: #28a745;\n    }\n    \n    .card.warning .card-value {\n      color: #ffc107;\n    }\n    \n    .card.info .card-value {\n      color: #17a2b8;\n    }\n    \n    .threats-section {\n      padding: 30px;\n    }\n    \n    .section-title {\n      font-size: 1.8em;\n      margin-bottom: 20px;\n      color: #1e3c72;\n      border-bottom: 3px solid #667eea;\n      padding-bottom: 10px;\n    }\n    \n    .threat-item {\n      background: white;\n      border: 1px solid #e0e0e0;\n      border-radius: 8px;\n      padding: 20px;\n      margin-bottom: 20px;\n      box-shadow: 0 2px 5px rgba(0,0,0,0.05);\n    }\n    \n    .threat-header {\n      display: flex;\n      justify-content: space-between;\n      align-items: center;\n      margin-bottom: 15px;\n      padding-bottom: 15px;\n      border-bottom: 2px solid #f0f0f0;\n    }\n    \n    .threat-ip {\n      font-size: 1.5em;\n      font-weight: bold;\n      color: #1e3c72;\n    }\n    \n    .threat-badge {\n      padding: 8px 16px;\n      border-radius: 20px;\n      font-weight: bold;\n      font-size: 0.9em;\n      text-transform: uppercase;\n    }\n    \n    .badge-true-positive {\n      background: #dc3545;\n      color: white;\n    }\n    \n    .badge-false-positive {\n      background: #28a745;\n      color: white;\n    }\n    \n    .badge-unknown {\n      background: #6c757d;\n      color: white;\n    }\n    \n    .badge-high-priority {\n      background: #ff6b6b;\n      color: white;\n      margin-left: 10px;\n      animation: pulse 2s infinite;\n    }\n    \n    @keyframes pulse {\n      0%, 100% { opacity: 1; }\n      50% { opacity: 0.7; }\n    }\n    \n    .threat-details {\n      display: grid;\n      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n      gap: 15px;\n      margin-top: 15px;\n    }\n    \n    .detail-box {\n      background: #f8f9fa;\n      padding: 15px;\n      border-radius: 5px;\n      border-left: 4px solid #667eea;\n    }\n    \n    .detail-label {\n      font-weight: bold;\n      color: #666;\n      font-size: 0.85em;\n      text-transform: uppercase;\n      margin-bottom: 5px;\n    }\n    \n    .detail-value {\n      color: #333;\n      font-size: 1em;\n    }\n    \n    .ai-analyses {\n      margin-top: 20px;\n      background: #fff9e6;\n      padding: 15px;\n      border-radius: 5px;\n      border: 1px solid #ffe066;\n    }\n    \n    .ai-analyses h4 {\n      color: #856404;\n      margin-bottom: 10px;\n    }\n    \n    .ai-model {\n      margin-bottom: 10px;\n      padding: 10px;\n      background: white;\n      border-radius: 4px;\n      border-left: 3px solid #ffc107;\n    }\n    \n    .ai-model-name {\n      font-weight: bold;\n      color: #856404;\n    }\n    \n    .ai-analysis-text {\n      margin-top: 5px;\n      color: #666;\n      font-size: 0.9em;\n      max-height: 100px;\n      overflow-y: auto;\n    }\n    \n    .footer {\n      background: #1e3c72;\n      color: white;\n      text-align: center;\n      padding: 20px;\n      font-size: 0.9em;\n    }\n    \n    table {\n      width: 100%;\n      border-collapse: collapse;\n      margin-top: 10px;\n    }\n    \n    th, td {\n      padding: 10px;\n      text-align: left;\n      border-bottom: 1px solid #e0e0e0;\n    }\n    \n    th {\n      background: #f8f9fa;\n      font-weight: bold;\n      color: #1e3c72;\n    }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🛡️ Cybersecurity Threat Analysis Report</h1>\n      <p>Generated on ${new Date().toLocaleString()}</p>\n    </div>\n    \n    <div class=\"summary-cards\">\n      <div class=\"card info\">\n        <div class=\"card-title\">Total Analyzed</div>\n        <div class=\"card-value\">${totalThreats}</div>\n      </div>\n      <div class=\"card danger\">\n        <div class=\"card-title\">True Positives</div>\n        <div class=\"card-value\">${truePositives}</div>\n      </div>\n      <div class=\"card success\">\n        <div class=\"card-title\">False Positives</div>\n        <div class=\"card-value\">${falsePositives}</div>\n      </div>\n      <div class=\"card warning\">\n        <div class=\"card-title\">High Priority</div>\n        <div class=\"card-value\">${highPriorityAlerts}</div>\n      </div>\n    </div>\n    \n    <div class=\"threats-section\">\n      <h2 class=\"section-title\">Detailed Threat Analysis</h2>\n      \n      ${items.map((item, index) => {\n        const data = item.json;\n        const classification = data.consensus_classification || 'UNKNOWN';\n        const badgeClass = classification === 'TRUE_POSITIVE' ? 'badge-true-positive' : \n                          classification === 'FALSE_POSITIVE' ? 'badge-false-positive' : 'badge-unknown';\n        \n        return `\n        <div class=\"threat-item\">\n          <div class=\"threat-header\">\n            <div class=\"threat-ip\">${data.source_ip || 'Unknown IP'}</div>\n            <div>\n              <span class=\"threat-badge ${badgeClass}\">${classification}</span>\n              ${data.alert_priority === 'HIGH' ? '<span class=\"threat-badge badge-high-priority\">⚠️ HIGH PRIORITY</span>' : ''}\n            </div>\n          </div>\n          \n          <div class=\"threat-details\">\n            <div class=\"detail-box\">\n              <div class=\"detail-label\">Attack Type</div>\n              <div class=\"detail-value\">${data.attack_type || 'N/A'}</div>\n            </div>\n            <div class=\"detail-box\">\n              <div class=\"detail-label\">Timestamp</div>\n              <div class=\"detail-value\">${data.timestamp || 'N/A'}</div>\n            </div>\n            <div class=\"detail-box\">\n              <div class=\"detail-label\">Destination IP</div>\n              <div class=\"detail-value\">${data.destination_ip || 'N/A'}</div>\n            </div>\n            <div class=\"detail-box\">\n              <div class=\"detail-label\">AI Consensus</div>\n              <div class=\"detail-value\">${data.consensus_count || 0} / ${data.total_models || 5} models agree</div>\n            </div>\n          </div>\n          \n          ${data.ipinfo_data ? `\n          <div class=\"detail-box\" style=\"margin-top: 15px;\">\n            <div class=\"detail-label\">Geolocation Info</div>\n            <div class=\"detail-value\">\n              ${data.ipinfo_data.city || 'Unknown'}, ${data.ipinfo_data.region || ''} ${data.ipinfo_data.country || ''}<br>\n              Organization: ${data.ipinfo_data.org || 'Unknown'}\n            </div>\n          </div>\n          ` : ''}\n          \n          <div class=\"ai-analyses\">\n            <h4>🤖 AI Model Analyses</h4>\n            ${data.chatgpt_analysis ? `\n            <div class=\"ai-model\">\n              <div class=\"ai-model-name\">ChatGPT Analysis:</div>\n              <div class=\"ai-analysis-text\">${data.chatgpt_analysis.substring(0, 300)}...</div>\n            </div>\n            ` : ''}\n            ${data.deepseek_analysis ? `\n            <div class=\"ai-model\">\n              <div class=\"ai-model-name\">DeepSeek Analysis:</div>\n              <div class=\"ai-analysis-text\">${data.deepseek_analysis.substring(0, 300)}...</div>\n            </div>\n            ` : ''}\n            ${data.claude_analysis ? `\n            <div class=\"ai-model\">\n              <div class=\"ai-model-name\">Claude Analysis:</div>\n              <div class=\"ai-analysis-text\">${data.claude_analysis.substring(0, 300)}...</div>\n            </div>\n            ` : ''}\n            ${data.mistral_analysis ? `\n            <div class=\"ai-model\">\n              <div class=\"ai-model-name\">Mistral Analysis:</div>\n              <div class=\"ai-analysis-text\">${data.mistral_analysis.substring(0, 300)}...</div>\n            </div>\n            ` : ''}\n            ${data.groq_analysis ? `\n            <div class=\"ai-model\">\n              <div class=\"ai-model-name\">Groq (Llama) Analysis:</div>\n              <div class=\"ai-analysis-text\">${data.groq_analysis.substring(0, 300)}...</div>\n            </div>\n            ` : ''}\n          </div>\n        </div>\n        `;\n      }).join('')}\n    </div>\n    \n    <div class=\"footer\">\n      <p>Report generated by n8n Automated Threat Analysis System</p>\n      <p>Powered by Multiple AI Models: ChatGPT, DeepSeek, Claude, Mistral, and Groq</p>\n    </div>\n  </div>\n</body>\n</html>\n`;\n\n// Return the HTML as binary data\nreturn {\n  json: {\n    success: true,\n    report_generated: new Date().toISOString(),\n    total_threats_analyzed: totalThreats\n  },\n  binary: {\n    data: Buffer.from(html, 'utf-8')\n  }\n};"
+      },
+      "id": "9ff19d80-84ec-41f9-9521-6bfd24367aad",
+      "name": "Generate HTML Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "threat_analysis_report.csv"
+        }
+      },
+      "id": "d345e9da-d0f1-407c-8f31-b3d7f6014c6b",
+      "name": "Convert to CSV",
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/home/agnes/ai-agent-for-cybersecurity",
+        "options": {}
+      },
+      "id": "2105fc0f-74d6-436e-bf88-4b2c9ceb4206",
+      "name": "Save CSV Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "/home/agnes/ai-agent-for-cybersecurity",
+        "options": {}
+      },
+      "id": "fb9b9cb9-baf5-4d35-b92c-08d6c1b702af",
+      "name": "Save HTML Report",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.abuseipdb.com/api/v2/check",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ipAddress",
+              "value": "={{ $json['Source IP Address'] }}"
+            },
+            {
+              "name": "maxAgeInDays",
+              "value": "90"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Key",
+              "value": "={{ $('Workflow Configuration').first().json.abuseipdb_api_key }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "1744c071-81df-4849-a524-2ea5d60d03b1",
+      "name": "AbuseIPDB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -576,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://ipinfo.io/{{ $json['Source IP Address'] }}/json?token={{ $('Workflow Configuration').first().json.ipinfo_token }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "afcdf7e2-5eff-4c4c-9a8c-c2bdbdf13315",
+      "name": "IPinfo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -576,
+        688
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shodan.io/shodan/host/{{ $json['Source IP Address'] }}?key={{ $('Workflow Configuration').first().json.shodan_api_key }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "6015b6a1-5dce-46ad-8f9c-02052b24dc9c",
+      "name": "Shodan",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -576,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.virustotal.com/api/v3/ip_addresses/{{ $json['Source IP Address'] }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-apikey",
+              "value": "={{ $('Workflow Configuration').first().json.virustotal_api_key }}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -576,
+        400
+      ],
+      "id": "fad425d7-c113-4f2f-b660-be4e09ad0cbe",
+      "name": "VirusTotal"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge All Enrichment Data",
+            "type": "main",
+            "index": 2
+          },
+          {
+            "node": "AbuseIPDB",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "VirusTotal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "IPinfo",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Shodan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Enrichment Data": {
+      "main": [
+        [
+          {
+            "node": "Format Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Final Output": {
+      "main": [
+        [
+          {
+            "node": "OpenAI Analysis (ChatGPT)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "DeepSeek Analysis",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mistral AI Analysis",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Groq Analysis (Llama)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Combine AI Analyses",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Combine AI Analyses": {
+      "main": [
+        [
+          {
+            "node": "Final Analysis Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Analysis Report": {
+      "main": [
+        [
+          {
+            "node": "Calculate AI Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate AI Consensus": {
+      "main": [
+        [
+          {
+            "node": "Check Threat Level",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Aggregate All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Threat Level": {
+      "main": [
+        [
+          {
+            "node": "High Priority Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate All Results": {
+      "main": [
+        [
+          {
+            "node": "Convert to CSV",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Generate HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to CSV": {
+      "main": [
+        [
+          {
+            "node": "Save CSV Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Save HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Analysis (ChatGPT)": {
+      "main": [
+        [
+          {
+            "node": "Combine AI Analyses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Analysis": {
+      "main": [
+        [
+          {
+            "node": "Combine AI Analyses",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Mistral AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Combine AI Analyses",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Groq Analysis (Llama)": {
+      "main": [
+        [
+          {
+            "node": "Combine AI Analyses",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "VirusTotal": {
+      "main": [
+        [
+          {
+            "node": "Merge All Enrichment Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AbuseIPDB": {
+      "main": [
+        [
+          {
+            "node": "Merge All Enrichment Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IPinfo": {
+      "main": [
+        [
+          {
+            "node": "Merge All Enrichment Data",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Shodan": {
+      "main": [
+        [
+          {
+            "node": "Merge All Enrichment Data",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4363768f-aaab-4750-8ec7-0a152326b0ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45f69aae1ef33136534424d62b0ec73cddfcb66ffd2ddfda20ca8ddf1cb01908"
+  },
+  "id": "EfmweSqaAY3gJ0UZ",
+  "tags": []
+}
