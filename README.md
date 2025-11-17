@@ -1,297 +1,143 @@
-![image alt](https://github.com/abimoussagnes/ai-agent-for-cybersecurity/blob/main/workflow.png?raw=true)
+# 🛡️ AI Agent for Cybersecurity
 
- 
- # 🛡️ AI Agent for Cybersecurity
-A fully automated AI-powered cybersecurity threat analysis system built with n8n, combining threat-intelligence APIs and multiple LLMs to enrich, classify, and report on security events. Designed for SOC analysts, students, blue teams, and automation enthusiasts.
+![workflow](https://github.com/abimoussagnes/ai-agent-for-cybersecurity/blob/main/workflow.png?raw=true)
 
-## 🧭 Overview
-This project automates the cybersecurity alert analysis process by orchestrating log ingestion, enrichment, threat scoring, AI-driven classification, and report generation. It integrates:
+A fully automated, AI‑powered cybersecurity alert analysis pipeline built with n8n. It enriches logs with threat-intel, runs multi-LLM analysis, aggregates model outputs with a consensus engine, and generates human-readable HTML and machine-friendly CSV reports.
 
+Badges: (add CI, license, repo badges here)
 
-Threat-intelligence APIs (AbuseIPDB, VirusTotal, IPinfo, Shodan, etc.)
+Table of contents
+- Overview
+- Features
+- Architecture
+- Quick Start
+- Installation
+- Configuration (Environment variables)
+- Usage
+- Outputs
+- Examples
+- Contributing
+- Troubleshooting
+- Roadmap
+- License & Contact
 
+Overview
+This project automates alert analysis by orchestrating:
+- CSV log ingestion and normalization
+- Threat-intel enrichment (AbuseIPDB, VirusTotal, IPinfo, Shodan, etc.)
+- Multi-model AI analysis (OpenAI, Groq, DeepSeek)
+- Consensus-driven classification and scoring
+- Automated HTML + CSV reports
+Originally built for the 42 Beirut x Technologia Hackathon; now a reusable foundation for SOC automation.
 
-Multiple LLMs for threat reasoning (OpenAI, Groq, DeepSeek)
+Key features
+- CSV ingestion from any SIEM, firewall, proxy, or manual upload
+- Enrichment: IP reputation, abuse reports, geolocation, ASN, malware indicators
+- Multi-LLM reasoning and consensus classification (majority + weighted scoring)
+- Output: enriched CSV + full HTML report
+- Fully automated n8n workflow (workflow.json included)
 
+Architecture (brief)
+1. Ingestion: reads and normalizes CSV logs
+2. Enrichment: calls multiple intel sources for metadata and reputation
+3. AI Analysis: runs several LLMs to classify and explain events
+4. Consensus Engine: aggregates outputs for final verdict and confidence
+5. Reporting: generates analysis.csv and final-report.html
 
-A consensus engine combining several AI outputs
-
-
-Automated HTML + CSV reporting
-
-
-Originally created for the 42 Beirut x Technologia Hackathon, this system now serves as a scalable foundation for automated SOC pipelines.
-
-## 🚀 Key Features
-
-
-CSV Log Ingestion – accepts logs from any SIEM, firewall, proxy, or manual upload
-
-
-Threat-Intel Enrichment – IP reputation, geolocation, ASN, ISP, malware indicators
-
-
-Multi-Model AI Analysis – runs each event through several LLMs
-
-
-Consensus Classification – merges AI outputs for unbiased, reliable decisions
-
-
-Detailed Reports – human-readable HTML + machine-friendly CSV
-
-
-Fully Automated n8n Workflow – included in this repository
-
-
-
-## 🏗️ Architecture
-### 1. Ingestion Layer
-Reads and normalizes CSV logs.
-### 2. Enrichment Layer
-Uses several data sources to collect:
-
-
-Reputation score
-
-
-Abuse reports
-
-
-Geolocation and ASN
-
-
-Malware checks
-
-
-Exposure and service details
-
-
-### 3. AI Analysis Layer
-Each LLM predicts:
-
-
-Malicious vs. benign
-
-
-Threat category
-
-
-Severity
-
-
-Full reasoning
-
-
-### 4. Consensus Engine
-Aggregates all AI outputs via majority voting and weighted scoring.
-### 5. Reporting Layer
-Produces:
-
-
-A full HTML report
-
-
-An enriched CSV dataset
-
-## ⚡ Quick Start
-
-
-Clone the repository
-git clone [https://github.com/abimoussagnes/ai-agent-for-cybersecurity.git](https://github.com/abimoussagnes/ai-agent-for-cybersecurity.git)
+Quick Start (fastest way to try)
+Clone:
+git clone https://github.com/abimoussagnes/ai-agent-for-cybersecurity.git
 cd ai-agent-for-cybersecurity
 
+Option A — n8n cloud / n8n desktop
+1. Open your n8n instance
+2. Workflows → Import → select workflow.json
+3. Configure credentials and environment variables (see below)
+4. Upload a sample CSV and run
 
-Import the workflow into n8n
-
-
-Open n8n
-
-
-Go to Workflows → Import
-
-
-Select workflow.json
-
-
-
-
-Configure environment variables
-(See the Configuration section below.)
-
-
-Upload a CSV log file
-Or connect the workflow to your log source.
-
-
-Run the workflow
-Manually, by schedule, or via webhook.
-
-
-
-## 🔧 Installation
-### Requirements
-
-
-n8n 1.x or later
-
-
-Node.js 18+ (for local installations)
-
-
-Docker (optional)
-
-
-API keys for threat intelligence and LLMs
-
-
-### Install n8n locally
+Option B — Run n8n locally
 npm install -g n8n
 n8n start
-### Run n8n using Docker
-docker run -it --rm -p 5678:5678 n8nio/n8n
-
-## 🔑 Configuration
-Create a .env file or configure environment variables directly inside n8n.
-
-
-
-Variable
-Description
-
-
-
-
-OPENAI_API_KEY
-OpenAI models for threat reasoning
-
-
-GROQ_API_KEY
-Groq models for secondary analysis
-
-
-DEEPSEEK_API_KEY
-Optional additional AI engine
-
-
-ABUSEIPDB_API_KEY
-Reputation + abuse reports
-
-
-VIRUSTOTAL_API_KEY
-Malware / IP / URL checks
-
-
-IPINFO_TOKEN
-Geolocation + ASN
-
-
-SHODAN_API_KEY
-Exposure lookup (optional)
-
-
-N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
-Usually set to false
-
-
-
-
-## 🖥️ Usage
-### 1. Prepare your CSV file
-Expected fields typically include:
-source_ip, timestamp, destination, port, event_type, raw_message
-### 2. Trigger the workflow
-
-
-Upload your CSV manually
-
-
-Or fetch logs automatically
-
-
-Or trigger via webhook
-
-
-### 3. Automated processing
-n8n will perform:
-
-
-Enrichment
-
-
-Multi-LLM analysis
-
-
-Consensus reasoning
-
-
-Report generation
-
-
-### 4. Retrieve results
-Generated output files include:
-
-
-analysis.csv
-
-
-final-report.html
-
-
-
-## 📄 Output Reports
-### HTML Report Includes
-
-
-Summary of malicious events
-
-
-AI reasoning from each LLM
-
-
-Confidence levels
-
-
-IP metadata and threat enrichment
-
-
-IOC highlights
-
-
-### CSV Report Includes
-
-
-Parsed log data
-
-
-Every enrichment field
-
-
-Each LLM’s classification
-
-
-Final consensus verdict
-
-
-## 🤝 Contributing
-Contributions are welcome!
-
-
-Fork this repository
-
-
-Create a feature branch
-git checkout -b feature/my-feature
-
-
-Commit changes
-
-
-Open a pull request
-
-
-Please keep style consistent and include clear descriptions of changes.
-
-
-## 📬 Contact
-GitHub: [https://github.com/abimoussagnes](https://github.com/abimoussagnes)
-Email: agnes.abimoussa@hotmail.com
+Import workflow.json as above.
+
+Option C — Docker
+docker run -it --rm -p 5678:5678 -v ~/.n8n:/home/node/.n8n n8nio/n8n
+
+Installation / Requirements
+- n8n 1.x or later
+- Node.js 18+ (for local installations)
+- Docker (optional)
+- API keys for threat intelligence providers and LLMs
+
+Configuration (environment variables)
+Create a .env file or configure values inside n8n. Marked required vs optional:
+
+| Variable | Required | Purpose | Example |
+|---|---:|---|---|
+| OPENAI_API_KEY | Yes | OpenAI models for threat reasoning | sk-... |
+| GROQ_API_KEY | Optional | Groq models for secondary analysis | groq-... |
+| DEEPSEEK_API_KEY | Optional | Additional AI engine | ds-... |
+| ABUSEIPDB_API_KEY | Optional | IP reputation / abuse reports | ... |
+| VIRUSTOTAL_API_KEY | Optional | Malware / IP / URL checks | ... |
+| IPINFO_TOKEN | Optional | Geolocation & ASN | ... |
+| SHODAN_API_KEY | Optional | Exposure lookup | ... |
+| N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS | Optional | n8n setting (usually false) | false |
+
+Security note
+- Do not commit API keys or .env files to the repo.
+- Use n8n credential stores, environment variables, or a secrets manager (Vault, AWS Secrets Manager).
+- Limit API key scopes where possible and rotate keys periodically.
+
+Usage: prepare a CSV
+Expected fields (common minimum): source_ip, timestamp, destination, port, event_type, raw_message
+Minimal example row:
+source_ip,timestamp,destination,port,event_type,raw_message
+203.0.113.45,2025-11-17T12:00:00Z,example.com,443,connection,failure on TLS handshake
+
+Triggering the workflow
+- Upload CSV file node in n8n and execute
+- Schedule the workflow to run periodically
+- Configure an incoming webhook to send logs automatically
+
+Automated processing steps performed
+- Data normalization and parsing
+- Threat-intel enrichment across multiple providers
+- Multi-LLM reasoning (malicious/benign, category, severity, full reasoning)
+- Consensus scoring and final verdict
+- Report generation (CSV + HTML)
+
+Outputs
+- analysis.csv — enriched row for every input event (includes per-LLM outputs + consensus)
+- final-report.html — human-friendly report with summaries, evidence, model explanations, and IOC highlights
+
+Examples
+- Add a small samples/ folder with a sample input CSV and a sample final-report.html to help users validate the setup quickly.
+
+Workflow JSON
+- The n8n workflow definition is shipped as workflow.json at the repo root (or specify the exact path). Import this into n8n as described in Quick Start.
+
+Contributing
+- Fork -> branch (feature/name) -> push -> open PR
+- Include tests or reproduction steps for bugfixes
+- Keep changes atomic and well-documented
+- Add yourself to CONTRIBUTORS.md if making substantial contributions
+
+Troubleshooting (common issues)
+- Missing API key errors: verify .env and n8n credential nodes
+- Rate limits: many intel providers throttle requests; implement caching or reduce volume
+- Unexpected LLM outputs: check prompt templates or reduce temperature in model config
+
+Roadmap / Known limitations
+- Add optional support for streaming LLM responses
+- Add more threat intel connectors (Censys, AlienVault OTX)
+- Improve scoring (machine learned weighted consensus)
+- Add integration tests and example outputs
+
+Contact
+- GitHub: https://github.com/abimoussagnes
+- Email: agnes.abimoussa@hotmail.com
+
+Acknowledgements
+- 42 Beirut x Technologia Hackathon — initial inspiration and prototype
+
+---
