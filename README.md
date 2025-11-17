@@ -4,7 +4,7 @@
 
 ---
 
-## Overview  
+## Overview
 This repository contains a fully automated **cybersecurity threat analysis system** built using **n8n**.  
 It was developed during the **42 Beirut x Technologia Hackathon** to showcase how automation and AI can significantly enhance threat detection, triage, and reporting workflows inside modern SOC environments.
 
